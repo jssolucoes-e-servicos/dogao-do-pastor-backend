@@ -8,6 +8,7 @@ import { configLoaderHelper } from 'src/shared/helpers/config-loader.helper';
 import { envSchema } from 'src/shared/validators/env-schema';
 import { CustomerModule } from './modules/customer/customer.module';
 import { EditionModule } from './modules/edition/edition.module';
+import { OrderItemsModule } from './modules/order-items/order-items.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -21,6 +22,7 @@ import { EditionModule } from './modules/edition/edition.module';
     SellersModule,
     CustomerModule,
     EditionModule,
+    OrderItemsModule,
   ],
   controllers: [],
   providers: [
