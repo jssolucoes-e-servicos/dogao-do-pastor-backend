@@ -38,7 +38,7 @@ export class SellersService {
 
   async findAll() {
     try {
-      const sellers = this._prisma.seller.findMany();
+      const sellers = await this._prisma.seller.findMany();
       return sellers;
     } catch (error) {
       this._logger.setError(this._name, error);

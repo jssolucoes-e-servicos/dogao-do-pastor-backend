@@ -1,4 +1,11 @@
-import { Body, Controller, Get, Post, UseInterceptors } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  UseInterceptors,
+} from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiOperation } from '@nestjs/swagger';
 import { CustomerCreateDto } from 'src/modules/customer/dto/customer.create.dto';
@@ -21,5 +28,18 @@ export class CustomerController {
   @Get()
   async findAll() {
     return await this._customerService.findAll();
+  }
+
+  @ApiOperation({ summary: 'List all incorporators Barber' })
+  @Get(':id')
+  async findOne(@Param('id') id: string) {
+    return await this._customerService.findOne(id);
+  }
+
+  @ApiOperation({ summary: 'List all incorporators Barber' })
+  @Get('by-phone/:phone')
+  async findByPhone(@Param('phone') phone: string) {
+    console.log('userphone');
+    return await this._customerService.findByPhone(phone);
   }
 }

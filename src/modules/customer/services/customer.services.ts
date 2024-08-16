@@ -41,7 +41,7 @@ export class CustomerService {
 
   async findAll() {
     try {
-      const customer = this._prisma.customer.findMany();
+      const customer = await this._prisma.customer.findMany();
       return customer;
     } catch (error) {
       this._logger.setError(this._name, error);
@@ -51,7 +51,7 @@ export class CustomerService {
 
   async findOne(id: string) {
     try {
-      const customer = this._prisma.customer.findFirst({ where: { id } });
+      const customer = await this._prisma.customer.findFirst({ where: { id } });
       return customer;
     } catch (error) {
       this._logger.setError(this._name, error);
@@ -61,7 +61,11 @@ export class CustomerService {
 
   async findByPhone(phone: string) {
     try {
-      const customer = this._prisma.customer.findFirst({ where: { phone } });
+      const customer = await this._prisma.customer.findMany({
+        where: { phone },
+      });
+
+      console.log(customer);
       return customer;
     } catch (error) {
       this._logger.setError(this._name, error);

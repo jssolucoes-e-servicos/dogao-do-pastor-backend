@@ -41,7 +41,7 @@ export class EditionService {
 
   async findAll() {
     try {
-      const sellers = this._prisma.edition.findMany();
+      const sellers = await this._prisma.edition.findMany();
       return sellers;
     } catch (error) {
       this._logger.setError(this._name, error);
