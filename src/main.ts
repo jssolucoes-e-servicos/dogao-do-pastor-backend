@@ -1,8 +1,8 @@
-import { configLoaderHelper } from './shared/helpers/config-loader.helper';
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
 import { NestExpressApplication } from '@nestjs/platform-express';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { AppModule } from './app.module';
+import { configLoaderHelper } from './shared/helpers/config-loader.helper';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -10,7 +10,6 @@ async function bootstrap() {
     .setTitle('ElBigodon API')
     .setDescription('ElBigodon API')
     .setVersion('1.0')
-    .addTag('elbigodonApp')
     .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);
@@ -24,7 +23,6 @@ async function bootstrap() {
   await app.listen(configLoaderHelper().app.port || AppModule.port);
 }
 bootstrap();
-
 
 // import { NestFactory } from '@nestjs/core';
 // import { AppModule } from './app.module';

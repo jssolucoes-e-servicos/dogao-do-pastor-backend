@@ -1,9 +1,7 @@
-import { Request } from '@nestjs/common';
-
 export type RequestWithUserType = Request & {
   user: {
     id: string;
-    email: string;
+    username: string;
     password: string;
   };
 };

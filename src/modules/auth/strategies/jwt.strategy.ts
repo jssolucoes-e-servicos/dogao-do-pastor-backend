@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { configLoaderHelper } from 'src/shared/helpers/config-loader.helper';
 import { UsersService } from 'src/modules/users/services/users.service';
+import { configLoaderHelper } from 'src/shared/helpers/config-loader.helper';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -14,11 +14,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(payload: { sub: number; email: string }) {
-    let user = await this._aceleraUsersService.findUserByEmailToLogin(
-      payload.email,
+  async validate(payload: { sub: number; username: string }) {
+    const user = await this._aceleraUsersService.findUserByUsernameToLogin(
+      payload.username,
     );
     user.password = undefined;
-    return { id: payload.sub, email: payload.email, data: user};
+    return { id: payload.sub, username: payload.username, data: user };
   }
 }
