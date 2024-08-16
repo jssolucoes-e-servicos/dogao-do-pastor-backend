@@ -1,0 +1,176 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+enum RoleEnum {
+  ADMINISTRADOR
+  FINANCEIRO
+  RECEPCAO
+  EXPEDICAO
+  PRODUCAO
+  ENTREGADOR
+  CLIENTE
+}
+
+enum StatusEnum {
+  PAGAMENTO
+  CANCELADO
+  FILA
+  PRODUCAO
+  EXPEDICAO
+  ENTREGA
+  RETORNO
+  FINALIZADO
+}
+
+model User {
+  id        String     @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  role      RoleEnum   @default(PRODUCAO)
+  username  String     @unique
+  email     String?    @unique
+  password  String?
+  active    Boolean?   @default(true)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  sessions  Session[]
+  customers Customer[]
+  sellers   Seller[]
+
+  @@index([createdAt(sort: Desc)])
+  @@map("users")
+}
+
+model Session {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String   @db.ObjectId
+  active    Boolean? @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([createdAt(sort: Desc)])
+  @@map("sessions")
+}
+
+model Cell {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  name       String
+  leaderName String
+  active     Boolean? @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  orders     Order[]
+  sellers    Seller[]
+
+  @@index([createdAt(sort: Desc)])
+  @@map("cells")
+}
+
+model Edition {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  name         String
+  limit        Int      @default(1000)
+  sold         Int      @default(0)
+  price        Float    @default(19.99)
+  startOfSales DateTime
+  date         DateTime
+  active       Boolean? @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  orders       Order[]
+
+  @@index([createdAt(sort: Desc)])
+  @@map("edition")
+}
+
+model Seller {
+  id        String     @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  phone     String
+  cell      Cell       @relation(fields: [cellId], references: [id])
+  cellId    String     @db.ObjectId
+  user      User?      @relation(fields: [userId], references: [id])
+  userId    String?    @db.ObjectId
+  active    Boolean?   @default(true)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  customers Customer[]
+  orders    Order[]
+
+  @@index([createdAt(sort: Desc)])
+  @@map("sellers")
+}
+
+model Customer {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  phone     String
+  address   String
+  reference String
+  user      User?    @relation(fields: [userId], references: [id])
+  userId    String?  @db.ObjectId
+  seller    Seller   @relation(fields: [sellerId], references: [id])
+  sellerId  String   @db.ObjectId
+  active    Boolean? @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  orders    Order[]
+
+  @@index([createdAt(sort: Desc)])
+  @@map("customers")
+}
+
+model Order {
+  id          String      @id @default(auto()) @map("_id") @db.ObjectId
+  hour        DateTime
+  edition     Edition     @relation(fields: [editionId], references: [id])
+  editionId   String      @db.ObjectId
+  cell        Cell        @relation(fields: [cellId], references: [id])
+  cellId      String      @db.ObjectId
+  ticket      String?
+  customer    Customer    @relation(fields: [customerId], references: [id])
+  customerId  String      @db.ObjectId
+  seller      Seller      @relation(fields: [sellerId], references: [id])
+  sellerId    String      @db.ObjectId
+  status      StatusEnum  @default(FILA)
+  amount      Int         @default(1)
+  observation String?
+  active      Boolean?    @default(true)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  OrderItem   OrderItem[]
+
+  @@index([createdAt(sort: Desc)])
+  @@map("orders")
+}
+
+model OrderItem {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  order        Order    @relation(fields: [orderId], references: [id])
+  orderId      String   @db.ObjectId
+  amount       Int?     @default(1)
+  isComplete   Boolean? @default(false)
+  potato       Boolean? @default(true)
+  ketchup      Boolean? @default(true)
+  peas         Boolean? @default(true)
+  mayonnaise   Boolean? @default(true)
+  corn         Boolean? @default(true)
+  redSauce     Boolean? @default(true)
+  cheeseSauce  Boolean? @default(true)
+  mustard      Boolean? @default(true)
+  bread        Boolean? @default(true)
+  gratedCheese Boolean? @default(true)
+  sausage      Boolean? @default(true)
+  active       Boolean? @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([createdAt(sort: Desc)])
+  @@map("orders_items")
+}
