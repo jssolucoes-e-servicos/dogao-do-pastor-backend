@@ -128,4 +128,48 @@ export class OrderService {
       return ResponseResultsHelper.ErrorResult();
     }
   }
+
+  async findbySellerPhone(sellerPhone: string) {
+    try {
+      const order = await this._prisma.order.findMany({
+        where: {
+          seller: {
+            phone: sellerPhone,
+          },
+        },
+        include: {
+          OrderItem: true,
+          cell: true,
+          customer: true,
+          seller: true,
+        },
+      });
+      return order;
+    } catch (error) {
+      this._logger.setError(this._name, error);
+      return ResponseResultsHelper.ErrorResult();
+    }
+  }
+
+  async findbyCell(cellId: string) {
+    try {
+      const order = await this._prisma.order.findMany({
+        where: {
+          cell: {
+            id: cellId,
+          },
+        },
+        include: {
+          OrderItem: true,
+          cell: true,
+          customer: true,
+          seller: true,
+        },
+      });
+      return order;
+    } catch (error) {
+      this._logger.setError(this._name, error);
+      return ResponseResultsHelper.ErrorResult();
+    }
+  }
 }
