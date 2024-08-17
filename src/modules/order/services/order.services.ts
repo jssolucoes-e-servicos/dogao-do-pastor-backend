@@ -11,20 +11,48 @@ export class OrderService {
     private readonly _logger: LoggerService,
   ) {}
   private readonly _name: string = 'Orders';
+  private readonly _editionId: string = '66bfeca2a07eea332713e6d6';
 
   async create(data: OrderCreateDto) {
     try {
+      let seller = await this._prisma.seller.findFirst({
+        where: { phone: data.seller.phone },
+      });
+      if (!seller) {
+        seller = await this._prisma.seller.create({
+          data: {
+            name: data.seller.name,
+            phone: data.seller.phone,
+            cellId: data.cell.id,
+          },
+        });
+      }
+      let customer = await this._prisma.customer.findFirst({
+        where: { phone: data.customer.phone, sellerId: seller.id },
+      });
+      if (!customer) {
+        customer = await this._prisma.customer.create({
+          data: {
+            name: data.customer.name,
+            phone: data.customer.phone,
+            sellerId: seller.id,
+            address: data.customer.address,
+            reference: data.customer.reference,
+          },
+        });
+      }
+
       const order = await this._prisma.order.create({
         data: {
-          hour: data.hour,
-          editionId: data.editionId,
-          cellId: data.cellId,
-          ticket: data.ticket,
-          customerId: data.customerId,
-          amount: data.amount,
-          sellerId: data.sellerId,
-          status: data.status,
-          observation: data.observation,
+          hour: data.order.hour,
+          editionId: this._editionId,
+          cellId: data.cell.id,
+          ticket: '',
+          customerId: customer.id,
+          amount: data.order.amount,
+          sellerId: seller.id,
+          status: 'FILA',
+          observation: data.order.observation,
         },
       });
 
